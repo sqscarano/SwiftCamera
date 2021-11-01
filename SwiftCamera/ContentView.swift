@@ -112,6 +112,20 @@ struct CameraView: View {
         }
     }
     
+    var capturedPhotoImage: some View {
+        Group {
+            if model.photo != nil {
+                Image(uiImage: model.photo.foregroundImage!)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .animation(.spring())
+            } else {
+                EmptyView()
+            }
+        }
+    }
+    
     var flipCameraButton: some View {
         Button(action: {
             model.flipCamera()
@@ -138,6 +152,8 @@ struct CameraView: View {
                             .font(.system(size: 20, weight: .medium, design: .default))
                     })
                     .accentColor(model.isFlashOn ? .yellow : .white)
+                    
+                    capturedPhotoImage
                     
                     CameraPreview(session: model.session)
                         .gesture(
@@ -196,6 +212,9 @@ struct CameraView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        CameraView()
+        Group {
+            CameraView()
+            CameraView()
+        }
     }
 }
