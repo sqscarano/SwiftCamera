@@ -120,8 +120,8 @@ struct CameraView: View {
     
     var capturedPhotoImage: some View {
         Group {
-            if model.photo != nil {
-                Image(uiImage: model.photo.image!)
+            if model.foregroundImage != nil {
+                Image(uiImage: model.foregroundImage!)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
