@@ -14,6 +14,8 @@ final class CameraModel: ObservableObject {
     
     @Published var photo: Photo!
     
+    @Published var foregroundImage: UIImage?
+    
     @Published var showAlertError = false
     
     @Published var isFlashOn = false
@@ -32,6 +34,10 @@ final class CameraModel: ObservableObject {
         service.$photo.sink { [weak self] (photo) in
             guard let pic = photo else { return }
             self?.photo = pic
+            
+            Task { [weak self] in
+                self?.foregroundImage = try? await self?.service.photo?.getForegroundImage()
+            }
         }
         .store(in: &self.subscriptions)
         
@@ -115,7 +121,7 @@ struct CameraView: View {
     var capturedPhotoImage: some View {
         Group {
             if model.photo != nil {
-                Image(uiImage: model.photo.foregroundImage!)
+                Image(uiImage: model.photo.image!)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
@@ -192,8 +198,6 @@ struct CameraView: View {
                     
                     
                     HStack {
-                        capturedPhotoThumbnail
-                        
                         Spacer()
                         
                         captureButton

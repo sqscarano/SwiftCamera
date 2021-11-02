@@ -133,39 +133,34 @@ extension Photo {
         guard let data = compressedData else { return nil }
         return UIImage(data: data)
     }
-    public var foregroundImage: UIImage? {
+    
+    public func getForegroundImage() async throws -> UIImage? {
         guard
-            let model = getDeepLabV3Model(),
-            let data = compressedData,
-            let sourceImage = UIImage(data: data)
+            let imageData = compressedData,
+            let sourceImage = UIImage(data: imageData)
         else { return nil }
-        
+
         let width: CGFloat = 513
         let height: CGFloat = 513
         let resizedImage = sourceImage.resized(to: CGSize(width: width, height: height), scale: 1)
         
-        guard let pixelBuffer = resizedImage.pixelBuffer(width: Int(width), height: Int(height)),
-        let outputPredictionImage = try? model.prediction(image: pixelBuffer),
-        let outputImage = outputPredictionImage.semanticPredictions.image(min: 0, max: 1, axes: (0, 0, 1)),
-        let outputCIImage = CIImage(image: outputImage),
-        let maskImage = outputCIImage.removeWhitePixels(),
-        let maskBlurImage = maskImage.applyBlurEffect() else { return nil }
-
-        guard let resizedCIImage = CIImage(image: resizedImage),
-               let compositedImage = resizedCIImage.composite(with: maskBlurImage) else { return nil }
-         let finalImage = UIImage(ciImage: compositedImage)
-             .resized(to: CGSize(width: width, height: height))
-         return finalImage
-    }
-    
-    private func getDeepLabV3Model() -> DeepLabV3? {
-        do {
-            let config = MLModelConfiguration()
-            return try DeepLabV3(configuration: config)
-        } catch {
-            print("Error loading model: \(error)")
-            return nil
+        guard
+            let resizedData = resizedImage.pngData(),
+            let url = URL(string: "http://u2net-predictor.tenant-compass.global.coreweave.com")
+        else { return nil }
+        
+        let request = URLRequest(url: url)
+        let (responseData, response) = try await URLSession.shared.upload(for: request, from: resizedData)
+        
+        if let httpResponse = response as? HTTPURLResponse {
+            if httpResponse.statusCode != 200 {
+                let str = String(decoding: responseData, as: UTF8.self)
+                print("response: \(response.description)\n\(str)")
+            }
         }
+
+        let image = UIImage(data: responseData)
+        return image
     }
 }
 
@@ -518,6 +513,12 @@ public class CameraService {
     
     /// - Tag: CapturePhoto
     public func capturePhoto() {
+        guard
+            let image = UIImage(named: "ghost-earrings-table"),
+            let data = image.pngData() else { return }
+        self.photo = Photo(originalData: data)
+        return
+        
         if self.setupResult != .configurationFailed {
             self.isCameraButtonDisabled = true
             
@@ -561,6 +562,8 @@ public class CameraService {
                     if let data = photoCaptureProcessor.photoData {
                         self?.photo = Photo(originalData: data)
                         print("passing photo")
+                        
+                        
                     } else {
                         print("No photo data")
                     }
