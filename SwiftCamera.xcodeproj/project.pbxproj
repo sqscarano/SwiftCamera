@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -24,6 +24,7 @@
 		311901AF27307A2E00C9D6AC /* MLMultiArray+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3119019E27307A2E00C9D6AC /* MLMultiArray+Image.swift */; };
 		311901B027307A2E00C9D6AC /* CVPixelBuffer+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3119019F27307A2E00C9D6AC /* CVPixelBuffer+Resize.swift */; };
 		311901B127307A2E00C9D6AC /* CVPixelBuffer+Rotate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 311901A027307A2E00C9D6AC /* CVPixelBuffer+Rotate.swift */; };
+		31AC8F6F273172210008A5D6 /* UIImage+invertAlpha.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31AC8F6E273172210008A5D6 /* UIImage+invertAlpha.swift */; };
 		31FB27402730EB8D00C3DA04 /* MultipartRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31FB273F2730EB8D00C3DA04 /* MultipartRequest.swift */; };
 		A9E6E4EF253B5EA8008B4A33 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E6E4EE253B5EA8008B4A33 /* CameraPreview.swift */; };
 		A9FE17852539494300D547C7 /* SwiftCameraApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9FE17842539494300D547C7 /* SwiftCameraApp.swift */; };
@@ -75,6 +76,7 @@
 		3119019E27307A2E00C9D6AC /* MLMultiArray+Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MLMultiArray+Image.swift"; sourceTree = "<group>"; };
 		3119019F27307A2E00C9D6AC /* CVPixelBuffer+Resize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CVPixelBuffer+Resize.swift"; sourceTree = "<group>"; };
 		311901A027307A2E00C9D6AC /* CVPixelBuffer+Rotate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CVPixelBuffer+Rotate.swift"; sourceTree = "<group>"; };
+		31AC8F6E273172210008A5D6 /* UIImage+invertAlpha.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+invertAlpha.swift"; sourceTree = "<group>"; };
 		31FB273F2730EB8D00C3DA04 /* MultipartRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipartRequest.swift; sourceTree = "<group>"; };
 		63BF55E8F93E8237480520AC /* Pods-SwiftCamera.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftCamera.debug.xcconfig"; path = "Target Support Files/Pods-SwiftCamera/Pods-SwiftCamera.debug.xcconfig"; sourceTree = "<group>"; };
 		9FF8F8C074C9CFCF83B1D6EA /* Pods_SwiftCamera.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SwiftCamera.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -195,6 +197,7 @@
 				A9FE178A2539494700D547C7 /* Preview Content */,
 				A9E6E4EE253B5EA8008B4A33 /* CameraPreview.swift */,
 				31FB273F2730EB8D00C3DA04 /* MultipartRequest.swift */,
+				31AC8F6E273172210008A5D6 /* UIImage+invertAlpha.swift */,
 			);
 			path = SwiftCamera;
 			sourceTree = "<group>";
@@ -231,7 +234,6 @@
 				63BF55E8F93E8237480520AC /* Pods-SwiftCamera.debug.xcconfig */,
 				EBF8070C2E3580D8FBC2F894 /* Pods-SwiftCamera.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -432,6 +434,7 @@
 				311901AF27307A2E00C9D6AC /* MLMultiArray+Image.swift in Sources */,
 				A9FE17852539494300D547C7 /* SwiftCameraApp.swift in Sources */,
 				311901A727307A2E00C9D6AC /* UIImage+RawBytes.swift in Sources */,
+				31AC8F6F273172210008A5D6 /* UIImage+invertAlpha.swift in Sources */,
 				311901B027307A2E00C9D6AC /* CVPixelBuffer+Resize.swift in Sources */,
 				A9FE17B725394F1E00D547C7 /* CameraService+Enums.swift in Sources */,
 			);
@@ -596,7 +599,7 @@
 				DEVELOPMENT_TEAM = 56AC46XWD8;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = SwiftCamera/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -619,7 +622,7 @@
 				DEVELOPMENT_TEAM = 56AC46XWD8;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = SwiftCamera/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

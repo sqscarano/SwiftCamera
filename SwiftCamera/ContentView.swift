@@ -100,32 +100,12 @@ struct CameraView: View {
         })
     }
     
-    var capturedPhotoThumbnail: some View {
+    var capturedObjectImage: some View {
         Group {
-            if model.photo != nil {
-                Image(uiImage: model.photo.image!)
+            if let image = model.foregroundImage {
+                Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .frame(width: 60, height: 60)
-                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                    .animation(.spring())
-                
-            } else {
-                RoundedRectangle(cornerRadius: 10)
-                    .frame(width: 60, height: 60, alignment: .center)
-                    .foregroundColor(.black)
-            }
-        }
-    }
-    
-    var capturedPhotoImage: some View {
-        Group {
-            if model.foregroundImage != nil {
-                Image(uiImage: model.foregroundImage!)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                    .animation(.spring())
             } else {
                 EmptyView()
             }
@@ -159,7 +139,7 @@ struct CameraView: View {
                     })
                     .accentColor(model.isFlashOn ? .yellow : .white)
                     
-                    capturedPhotoImage
+                    capturedObjectImage
                     
                     CameraPreview(session: model.session)
                         .gesture(
@@ -195,7 +175,6 @@ struct CameraView: View {
                             }
                         )
                         .animation(.easeInOut)
-                    
                     
                     HStack {
                         Spacer()

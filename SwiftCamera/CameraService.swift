@@ -12,6 +12,7 @@ import Photos
 import UIKit
 import CoreML
 import Alamofire
+import CoreGraphics
 
 //  MARK: Class Camera Service, handles setup of AVFoundation needed for a basic camera app.
 public struct Photo: Identifiable, Equatable {
@@ -141,8 +142,9 @@ extension Photo {
             let sourceImage = UIImage(data: imageData)
         else { return }
 
+        let aspectRatio = sourceImage.size.width / sourceImage.size.height
         let width: CGFloat = 513
-        let height: CGFloat = 513
+        let height: CGFloat = width / aspectRatio
         let resizedImage = sourceImage.resized(to: CGSize(width: width, height: height), scale: 1)
         
         guard let resizedData = resizedImage.pngData() else { return }
@@ -162,9 +164,26 @@ extension Photo {
             }
             
             print("successful sugementation")
-            let image = UIImage(data: responseData.data!)
-            completion(image)
+            let maskImage = UIImage(data: responseData.data!)!
+            let resultImage = getMaskImage(image: resizedImage, mask: maskImage)
+            
+            completion(resultImage)
         }
+    }
+    
+    private func getMaskImage(image: UIImage, mask: UIImage) -> UIImage {
+        let resizedMaskImage = mask.resized(to: image.size)
+        let outputCIImage = CIImage(cgImage: resizedMaskImage.cgImage!)
+        let maskImage = outputCIImage.removeWhitePixels()!
+        
+        let resizedImage = CIImage(cgImage: image.cgImage!)
+        let compositedImage = resizedImage.composite(with: maskImage)!
+        
+        let context = CIContext(options: nil)
+        let cgImageCopy = context.createCGImage(compositedImage, from: compositedImage.extent)!
+        
+        let finalImage = UIImage(cgImage: cgImageCopy)
+        return finalImage
     }
 }
 
@@ -517,9 +536,11 @@ public class CameraService {
     
     /// - Tag: CapturePhoto
     public func capturePhoto() {
-        guard let image = UIImage(named: "ghost-earrings-table"), let data = image.pngData() else { return }
+#if targetEnvironment(simulator)
+        guard let image = UIImage(named: "ghost-earrings-hand"), let data = image.pngData() else { return }
         self.photo = Photo(originalData: data)
         return
+#endif
         
         if self.setupResult != .configurationFailed {
             self.isCameraButtonDisabled = true
