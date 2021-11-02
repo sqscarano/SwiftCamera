@@ -75,6 +75,10 @@ final class CameraModel: ObservableObject {
         service.set(zoom: factor)
     }
     
+    func resetForegroundImage() {
+        foregroundImage = nil
+    }
+    
     func switchFlash() {
         service.flashMode = service.flashMode == .on ? .off : .on
     }
@@ -83,10 +87,12 @@ final class CameraModel: ObservableObject {
 struct CameraView: View {
     @StateObject var model = CameraModel()
     
-    @State var scale: CGFloat = 1.0
+    @State var scale: CGFloat = 0.8
     
     var captureButton: some View {
         Button(action: {
+            model.resetForegroundImage()
+            scale = 0.8
             model.capturePhoto()
         }, label: {
             Circle()
@@ -153,13 +159,17 @@ struct CameraView: View {
                                 if model.willCapturePhoto {
                                     Color.white
                                 }
-                                capturedObjectImage.scaleEffect(self.scale)
+                                capturedObjectImage.scaleEffect(self.scale).draggable()
                             }
                         )
-                        .animation(.easeInOut)
+                        .animation(.linear)
                         .gesture(MagnificationGesture().onChanged { value in
                             self.scale = value.magnitude
                         })
+                        .onTapGesture {
+                            model.resetForegroundImage()
+                            scale = 0.8
+                        }
                     
                     HStack {
                         Spacer()
@@ -176,6 +186,26 @@ struct CameraView: View {
                 }
             }
         }
+    }
+}
+
+struct DraggableView: ViewModifier {
+    @State var offset = CGPoint(x: 0, y: 0)
+    
+    func body(content: Content) -> some View {
+        content
+            .gesture(DragGesture(minimumDistance: 0)
+                .onChanged { value in
+                self.offset.x = value.location.x - value.startLocation.x
+                self.offset.y = value.location.y - value.startLocation.y
+            })
+            .offset(x: offset.x, y: offset.y)
+    }
+}
+
+extension View {
+    func draggable() -> some View {
+        return modifier(DraggableView())
     }
 }
 
