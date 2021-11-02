@@ -1,6 +1,6 @@
 platform :ios, '14.0'
-target 'Camera' do
+target 'SwiftCamera' do
   use_frameworks!
 
-  pod 'Alamofire'
+  pod 'Alamofire', '~> 5.4'
 end

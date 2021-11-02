@@ -11,6 +11,7 @@ import AVFoundation
 import Photos
 import UIKit
 import CoreML
+import Alamofire
 
 //  MARK: Class Camera Service, handles setup of AVFoundation needed for a basic camera app.
 public struct Photo: Identifiable, Equatable {
@@ -134,33 +135,36 @@ extension Photo {
         return UIImage(data: data)
     }
     
-    public func getForegroundImage() async throws -> UIImage? {
+    public func getForegroundImage(completion: @escaping (UIImage?) -> Void) {
         guard
             let imageData = compressedData,
             let sourceImage = UIImage(data: imageData)
-        else { return nil }
+        else { return }
 
         let width: CGFloat = 513
         let height: CGFloat = 513
         let resizedImage = sourceImage.resized(to: CGSize(width: width, height: height), scale: 1)
         
-        guard
-            let resizedData = resizedImage.pngData(),
-            let url = URL(string: "http://u2net-predictor.tenant-compass.global.coreweave.com")
-        else { return nil }
-        
-        let request = URLRequest(url: url)
-        let (responseData, response) = try await URLSession.shared.upload(for: request, from: resizedData)
-        
-        if let httpResponse = response as? HTTPURLResponse {
-            if httpResponse.statusCode != 200 {
-                let str = String(decoding: responseData, as: UTF8.self)
-                print("response: \(response.description)\n\(str)")
-            }
-        }
+        guard let resizedData = resizedImage.pngData() else { return }
 
-        let image = UIImage(data: responseData)
-        return image
+        print("requesting segmentation")
+        let uploadRequest = AF.upload(multipartFormData: { multipartFormData in
+            multipartFormData.append(resizedData, withName: "data", fileName: "image.png", mimeType: "image/png")
+        }, to: "http://u2net-predictor.tenant-compass.global.coreweave.com")
+
+        uploadRequest.responseData { responseData in
+            guard let httpResponse = responseData.response else { return }
+            
+            guard httpResponse.statusCode == 200 else {
+                let str = String(decoding: responseData.data!, as: UTF8.self)
+                print("response: [\(httpResponse.statusCode)] \(str)")
+                return
+            }
+            
+            print("successful sugementation")
+            let image = UIImage(data: responseData.data!)
+            completion(image)
+        }
     }
 }
 
@@ -513,9 +517,7 @@ public class CameraService {
     
     /// - Tag: CapturePhoto
     public func capturePhoto() {
-        guard
-            let image = UIImage(named: "ghost-earrings-table"),
-            let data = image.pngData() else { return }
+        guard let image = UIImage(named: "ghost-earrings-table"), let data = image.pngData() else { return }
         self.photo = Photo(originalData: data)
         return
         

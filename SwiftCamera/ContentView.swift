@@ -35,8 +35,8 @@ final class CameraModel: ObservableObject {
             guard let pic = photo else { return }
             self?.photo = pic
             
-            Task { [weak self] in
-                self?.foregroundImage = try? await self?.service.photo?.getForegroundImage()
+            pic.getForegroundImage() { image in
+                self?.foregroundImage = image
             }
         }
         .store(in: &self.subscriptions)
@@ -198,6 +198,7 @@ struct CameraView: View {
                     
                     
                     HStack {
+                        Spacer()
                         Spacer()
                         
                         captureButton
