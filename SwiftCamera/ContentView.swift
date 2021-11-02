@@ -83,7 +83,7 @@ final class CameraModel: ObservableObject {
 struct CameraView: View {
     @StateObject var model = CameraModel()
     
-    @State var currentZoomFactor: CGFloat = 1.0
+    @State var scale: CGFloat = 1.0
     
     var captureButton: some View {
         Button(action: {
@@ -139,26 +139,7 @@ struct CameraView: View {
                     })
                     .accentColor(model.isFlashOn ? .yellow : .white)
                     
-                    capturedObjectImage
-                    
                     CameraPreview(session: model.session)
-                        .gesture(
-                            DragGesture().onChanged({ (val) in
-                                //  Only accept vertical drag
-                                if abs(val.translation.height) > abs(val.translation.width) {
-                                    //  Get the percentage of vertical screen space covered by drag
-                                    let percentage: CGFloat = -(val.translation.height / reader.size.height)
-                                    //  Calculate new zoom factor
-                                    let calc = currentZoomFactor + percentage
-                                    //  Limit zoom factor to a maximum of 5x and a minimum of 1x
-                                    let zoomFactor: CGFloat = min(max(calc, 1), 5)
-                                    //  Store the newly calculated zoom factor
-                                    currentZoomFactor = zoomFactor
-                                    //  Sets the zoom factor to the capture device session
-                                    model.zoom(with: zoomFactor)
-                                }
-                            })
-                        )
                         .onAppear {
                             model.configure()
                         }
@@ -170,11 +151,15 @@ struct CameraView: View {
                         .overlay(
                             Group {
                                 if model.willCapturePhoto {
-                                    Color.black
+                                    Color.white
                                 }
+                                capturedObjectImage.scaleEffect(self.scale)
                             }
                         )
                         .animation(.easeInOut)
+                        .gesture(MagnificationGesture().onChanged { value in
+                            self.scale = value.magnitude
+                        })
                     
                     HStack {
                         Spacer()
