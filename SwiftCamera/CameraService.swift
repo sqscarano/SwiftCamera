@@ -538,7 +538,7 @@ public class CameraService {
     /// - Tag: CapturePhoto
     public func capturePhoto() {
 #if targetEnvironment(simulator)
-        guard let image = UIImage(named: "chair"), let data = image.pngData() else { return }
+        guard let image = UIImage(named: "wallet"), let data = image.pngData() else { return }
         self.photo = Photo(originalData: data)
         return
 #endif

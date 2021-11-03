@@ -69,6 +69,39 @@ final class CameraModel: ObservableObject {
         service.capturePhoto()
     }
     
+    func readWebsocketMessage(webSocketTask: URLSessionWebSocketTask) {
+        webSocketTask.receive { [weak self] result in
+            switch result {
+            case .failure(let error):
+                print("error: \(error)")
+            case .success(let message):
+                switch message {
+                case .string(let text):
+                    print("received: \(text)")
+                default:
+                    fatalError()
+                }
+            }
+            
+            self?.readWebsocketMessage(webSocketTask: webSocketTask)
+        }
+    }
+    
+    func pastePhoto() {
+        let webSocketTask = URLSession.shared.webSocketTask(with: URL(string: "ws://192.168.86.29:8383")!)
+        
+        let message = URLSessionWebSocketTask.Message.string("{\"role\": \"app\"}")
+        webSocketTask.send(message) { error in
+            if let error = error {
+                print("Websocket sending error: \(error)")
+            }
+        }
+        readWebsocketMessage(webSocketTask: webSocketTask)
+
+        webSocketTask.resume()
+        
+    }
+    
     func flipCamera() {
         service.changeCamera()
     }
@@ -93,9 +126,15 @@ struct CameraView: View {
     
     var captureButton: some View {
         Button(action: {
-            model.resetForegroundImage()
-            scale = 0.8
-            model.capturePhoto()
+            if model.foregroundImage == nil {
+                model.resetForegroundImage()
+                scale = 0.8
+                
+                model.capturePhoto()
+            } else {
+                model.pastePhoto()
+            }
+            
         }, label: {
             Circle()
                 .foregroundColor(.white)
