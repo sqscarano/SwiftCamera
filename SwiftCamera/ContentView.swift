@@ -28,6 +28,8 @@ final class CameraModel: ObservableObject {
     
     var session: AVCaptureSession
     
+    let webSocketTask = URLSession.shared.webSocketTask(with: URL(string: "ws://192.168.86.29:8383")!)
+    
     private var subscriptions = Set<AnyCancellable>()
     
     init() {
@@ -95,13 +97,10 @@ final class CameraModel: ObservableObject {
         let base64data = data.base64EncodedString()
         let message = "{\"image\": \"\(base64data)\"}"
         
-        let webSocketTask = URLSession.shared.webSocketTask(with: URL(string: "ws://192.168.86.29:8383")!)
         webSocketTask.send(URLSessionWebSocketTask.Message.string(message)) { error in
             if let error = error {
                 print("error: \(error)")
             }
-            
-            webSocketTask.cancel()
         }
 
         readWebsocketMessage(webSocketTask: webSocketTask)
@@ -133,13 +132,13 @@ struct CameraView: View {
     var captureButton: some View {
         Button(action: {
             if model.foregroundImage == nil {
-                model.resetForegroundImage()
-                scale = 0.8
-                
                 model.capturePhoto()
             } else {
                 model.pastePhoto()
             }
+            
+            model.resetForegroundImage()
+            scale = 0.8
             
         }, label: {
             Circle()

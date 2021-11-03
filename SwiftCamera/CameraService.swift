@@ -70,7 +70,7 @@ extension CIImage {
 
         guard let currentFilter = CIFilter(name: "CIGaussianBlur") else { return nil }
         currentFilter.setValue(clampFilter.outputImage, forKey: kCIInputImageKey)
-        currentFilter.setValue(2, forKey: "inputRadius")
+        currentFilter.setValue(1, forKey: "inputRadius")
         guard let output = currentFilter.outputImage,
               let cgimg = context.createCGImage(output, from: extent) else { return nil }
 
@@ -143,7 +143,7 @@ extension Photo {
         else { return }
 
         let aspectRatio = sourceImage.size.width / sourceImage.size.height
-        let width: CGFloat = 513
+        let width: CGFloat = 512
         let height: CGFloat = width / aspectRatio
         let resizedImage = sourceImage.resized(to: CGSize(width: width, height: height), scale: 1)
         
@@ -538,7 +538,7 @@ public class CameraService {
     /// - Tag: CapturePhoto
     public func capturePhoto() {
 #if targetEnvironment(simulator)
-        guard let image = UIImage(named: "wallet"), let data = image.pngData() else { return }
+        guard let image = UIImage(named: "can"), let data = image.pngData() else { return }
         self.photo = Photo(originalData: data)
         return
 #endif

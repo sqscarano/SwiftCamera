@@ -9,7 +9,7 @@ ws.addEventListener('message', function (event) {
   const imgBase64 = j.image
   const src = 'data:image/png;base64,' + imgBase64;
 
-  var image = new Image();
+  var image = new Image(400);
   image.src = src;
   image.id = 'asdf';
   document.body.appendChild(image);  
