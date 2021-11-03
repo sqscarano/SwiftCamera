@@ -16,6 +16,8 @@ final class CameraModel: ObservableObject {
     
     @Published var foregroundImage: UIImage?
     
+    @Published var backgroundImage: UIImage? = UIImage(named: "bg-9")
+    
     @Published var showAlertError = false
     
     @Published var isFlashOn = false
@@ -109,9 +111,17 @@ struct CameraView: View {
     var capturedObjectImage: some View {
         Group {
             if let image = model.foregroundImage {
-                Image(uiImage: image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
+                Image(uiImage: image).resizable().aspectRatio(contentMode: .fill)
+            } else {
+                EmptyView()
+            }
+        }
+    }
+    
+    var backgroundImage: some View {
+        Group {
+            if let image = model.backgroundImage, model.foregroundImage != nil {
+                Image(uiImage: image).resizable().aspectRatio(contentMode: .fill)
             } else {
                 EmptyView()
             }
@@ -159,17 +169,16 @@ struct CameraView: View {
                                 if model.willCapturePhoto {
                                     Color.white
                                 }
-                                capturedObjectImage.scaleEffect(self.scale).draggable()
+                                
+                                capturedObjectImage
+                                    .scaleEffect(self.scale)
+                                    .draggable()
                             }
                         )
                         .animation(.linear)
                         .gesture(MagnificationGesture().onChanged { value in
                             self.scale = value.magnitude
                         })
-                        .onTapGesture {
-                            model.resetForegroundImage()
-                            scale = 0.8
-                        }
                     
                     HStack {
                         Spacer()
@@ -183,7 +192,11 @@ struct CameraView: View {
                         
                     }
                     .padding(.horizontal, 20)
+                }.onTapGesture {
+                    model.resetForegroundImage()
+                    scale = 0.8
                 }
+
             }
         }
     }
