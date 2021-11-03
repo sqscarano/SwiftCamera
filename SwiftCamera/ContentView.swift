@@ -96,11 +96,16 @@ final class CameraModel: ObservableObject {
         let message = "{\"image\": \"\(base64data)\"}"
         
         let webSocketTask = URLSession.shared.webSocketTask(with: URL(string: "ws://192.168.86.29:8383")!)
-        webSocketTask.send(URLSessionWebSocketTask.Message.string(message)) { _ in }
+        webSocketTask.send(URLSessionWebSocketTask.Message.string(message)) { error in
+            if let error = error {
+                print("error: \(error)")
+            }
+            
+            webSocketTask.cancel()
+        }
 
         readWebsocketMessage(webSocketTask: webSocketTask)
         webSocketTask.resume()
-        
     }
     
     func flipCamera() {

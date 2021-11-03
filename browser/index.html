@@ -1,0 +1,21 @@
+<html lang="en-US">
+  <head>
+    <script>
+const ws = new WebSocket('ws://localhost:8383');
+
+ws.addEventListener('message', function (event) {
+  console.log('[websocket] message received');
+  const j = JSON.parse(event.data)
+  const imgBase64 = j.image
+  const src = 'data:image/png;base64,' + imgBase64;
+
+  var image = new Image();
+  image.src = src;
+  image.id = 'asdf';
+  document.body.appendChild(image);  
+  console.log('[websocket] image created');
+})
+    </script>
+  </head>
+  <body></body>
+</html>
