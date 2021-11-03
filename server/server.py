@@ -2,13 +2,13 @@ import logging
 from websocket_server import WebsocketServer
 import json
 
-servers = []
+browsers = []
 
 def new_client(client, server):
 	server.send_message_to_all("Hey all, a new client has joined us")
 
 def delete_client(client, server):
-  servers.remove(client)
+  browsers.remove(client)
 
 def message_received(client, server, message):
   request = json.loads(message)
@@ -16,12 +16,12 @@ def message_received(client, server, message):
   if "role" in request:
     role = request["role"]
     print("new " + role)
-    if role == "server":
-      servers.append(role)
+    if role == "browser":
+      browsers.append(role)
 
   if "image" in request:
     print("image received")
-    for c in servers:
+    for c in browsers:
       print("  image sent")
       server.send_message(c, message)
 
