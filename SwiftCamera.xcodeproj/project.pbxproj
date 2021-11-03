@@ -24,6 +24,7 @@
 		311901AF27307A2E00C9D6AC /* MLMultiArray+Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3119019E27307A2E00C9D6AC /* MLMultiArray+Image.swift */; };
 		311901B027307A2E00C9D6AC /* CVPixelBuffer+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3119019F27307A2E00C9D6AC /* CVPixelBuffer+Resize.swift */; };
 		311901B127307A2E00C9D6AC /* CVPixelBuffer+Rotate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 311901A027307A2E00C9D6AC /* CVPixelBuffer+Rotate.swift */; };
+		31A559C12733528E001EB9B5 /* CIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A559C02733528E001EB9B5 /* CIImage+Extensions.swift */; };
 		31AC8F6F273172210008A5D6 /* UIImage+invertAlpha.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31AC8F6E273172210008A5D6 /* UIImage+invertAlpha.swift */; };
 		31FB27402730EB8D00C3DA04 /* MultipartRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31FB273F2730EB8D00C3DA04 /* MultipartRequest.swift */; };
 		A9E6E4EF253B5EA8008B4A33 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E6E4EE253B5EA8008B4A33 /* CameraPreview.swift */; };
@@ -76,6 +77,7 @@
 		3119019E27307A2E00C9D6AC /* MLMultiArray+Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MLMultiArray+Image.swift"; sourceTree = "<group>"; };
 		3119019F27307A2E00C9D6AC /* CVPixelBuffer+Resize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CVPixelBuffer+Resize.swift"; sourceTree = "<group>"; };
 		311901A027307A2E00C9D6AC /* CVPixelBuffer+Rotate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CVPixelBuffer+Rotate.swift"; sourceTree = "<group>"; };
+		31A559C02733528E001EB9B5 /* CIImage+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CIImage+Extensions.swift"; sourceTree = "<group>"; };
 		31AC8F6E273172210008A5D6 /* UIImage+invertAlpha.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+invertAlpha.swift"; sourceTree = "<group>"; };
 		31FB273F2730EB8D00C3DA04 /* MultipartRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipartRequest.swift; sourceTree = "<group>"; };
 		63BF55E8F93E8237480520AC /* Pods-SwiftCamera.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SwiftCamera.debug.xcconfig"; path = "Target Support Files/Pods-SwiftCamera/Pods-SwiftCamera.debug.xcconfig"; sourceTree = "<group>"; };
@@ -198,6 +200,7 @@
 				A9E6E4EE253B5EA8008B4A33 /* CameraPreview.swift */,
 				31FB273F2730EB8D00C3DA04 /* MultipartRequest.swift */,
 				31AC8F6E273172210008A5D6 /* UIImage+invertAlpha.swift */,
+				31A559C02733528E001EB9B5 /* CIImage+Extensions.swift */,
 			);
 			path = SwiftCamera;
 			sourceTree = "<group>";
@@ -415,6 +418,7 @@
 				311901A627307A2E00C9D6AC /* CGImagePropertyOrientation.swift in Sources */,
 				311901A127307A2E00C9D6AC /* Array+Extensions.swift in Sources */,
 				31FB27402730EB8D00C3DA04 /* MultipartRequest.swift in Sources */,
+				31A559C12733528E001EB9B5 /* CIImage+Extensions.swift in Sources */,
 				311901AD27307A2E00C9D6AC /* NonMaxSuppression.swift in Sources */,
 				311901AA27307A2E00C9D6AC /* CoreML+Combine.swift in Sources */,
 				311901A227307A2E00C9D6AC /* Math.swift in Sources */,
