@@ -88,16 +88,17 @@ final class CameraModel: ObservableObject {
     }
     
     func pastePhoto() {
-        let webSocketTask = URLSession.shared.webSocketTask(with: URL(string: "ws://192.168.86.29:8383")!)
-        
-        let message = URLSessionWebSocketTask.Message.string("{\"role\": \"app\"}")
-        webSocketTask.send(message) { error in
-            if let error = error {
-                print("Websocket sending error: \(error)")
-            }
+        guard let foregroundImage = foregroundImage, let data = foregroundImage.pngData() else {
+            return
         }
-        readWebsocketMessage(webSocketTask: webSocketTask)
+        
+        let base64data = data.base64EncodedString()
+        let message = "{\"image\": \"\(base64data)\"}"
+        
+        let webSocketTask = URLSession.shared.webSocketTask(with: URL(string: "ws://192.168.86.29:8383")!)
+        webSocketTask.send(URLSessionWebSocketTask.Message.string(message)) { _ in }
 
+        readWebsocketMessage(webSocketTask: webSocketTask)
         webSocketTask.resume()
         
     }
