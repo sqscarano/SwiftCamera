@@ -24,6 +24,10 @@ final class CameraModel: ObservableObject {
     
     @Published var willCapturePhoto = false
     
+    @Published var detectedText: String?
+    
+    @Published var isTextMode = false
+    
     var alertError: AlertError!
     
     var session: AVCaptureSession
@@ -39,8 +43,14 @@ final class CameraModel: ObservableObject {
             guard let pic = photo else { return }
             self?.photo = pic
             
-            pic.getForegroundImage() { image in
+            pic.getForegroundImage() { [weak self] image in
+                guard let image = image else { return }
+
                 self?.foregroundImage = image
+
+                pic.recognizeText(image: image) { [weak self] string in
+                    self?.detectedText = string
+                }
             }
         }
         .store(in: &self.subscriptions)
@@ -79,7 +89,7 @@ final class CameraModel: ObservableObject {
         }
         
         let base64data = data.base64EncodedString()
-        let message = "{\"image\": \"\(base64data)\", \"scale\": \(scale)}"
+        let message = "{\"image\": \"\(base64data)\", \"scale\": \(scale), \"text\": \"\(detectedText ?? "")\"}"
         
         webSocketTask.send(URLSessionWebSocketTask.Message.string(message)) { error in
             if let error = error {
@@ -123,6 +133,10 @@ final class CameraModel: ObservableObject {
     
     func switchFlash() {
         service.flashMode = service.flashMode == .on ? .off : .on
+    }
+    
+    func switchTextMode() {
+        isTextMode = !isTextMode
     }
 }
 
@@ -198,23 +212,34 @@ struct CameraView: View {
         }
     }
     
+    var detectedText: some View {
+        Group {
+            if let text = model.detectedText {
+                Text(text).font(.body).foregroundColor(.white).padding(20.0)
+            } else {
+                EmptyView()
+            }
+        }
+    }
+    
     var body: some View {
         GeometryReader { reader in
             ZStack {
                 Color.black.edgesIgnoringSafeArea(.all)
                 
                 VStack {
-                    Button(action: {
-                        model.switchFlash()
-                    }, label: {
-                        Image(systemName: model.isFlashOn ? "bolt.fill" : "bolt.slash.fill")
-                            .font(.system(size: 20, weight: .medium, design: .default))
-                    })
-                    .accentColor(model.isFlashOn ? .yellow : .white)
-                    
-//#if targetEnvironment(simulator)
-//                    placeholderImage
-//#endif
+                    HStack {
+                        Spacer()
+
+                        Button(action: {
+                            model.switchTextMode()
+                        }, label: {
+                            Image(systemName: model.isTextMode ? "doc.text.fill.viewfinder" : "doc.text.viewfinder" )
+                                .font(.system(size: 40, weight: .medium, design: .default))
+                        })
+                        .accentColor(model.isTextMode ? .yellow : .white)
+                        .padding(20.0)
+                    }
                     
                     CameraPreview(session: model.session)
                         .onAppear {
@@ -231,9 +256,11 @@ struct CameraView: View {
                                     Color.white
                                 }
                                 
-                                capturedObjectImage
-                                    .scaleEffect(self.scale)
-                                    .draggable()
+                                if model.isTextMode {
+                                    detectedText
+                                } else {
+                                    capturedObjectImage.scaleEffect(self.scale).draggable()
+                                }
                             }
                         )
                         .animation(.linear)
@@ -242,15 +269,7 @@ struct CameraView: View {
                         })
                     
                     HStack {
-                        Spacer()
-                        Spacer()
-                        
                         captureButton
-                        
-                        Spacer()
-                        
-                        flipCameraButton
-                        
                     }
                     .padding(.horizontal, 20)
                 }.onTapGesture {

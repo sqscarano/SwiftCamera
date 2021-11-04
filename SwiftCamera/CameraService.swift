@@ -13,6 +13,7 @@ import UIKit
 import CoreML
 import Alamofire
 import CoreGraphics
+import Vision
 
 //  MARK: Class Camera Service, handles setup of AVFoundation needed for a basic camera app.
 public struct Photo: Identifiable, Equatable {
@@ -112,6 +113,33 @@ extension Photo {
         
         let finalImage = UIImage(cgImage: cgImageCopy)
         return finalImage
+    }
+    
+    public func recognizeText(image: UIImage, completion: @escaping (String?) -> Void) {
+        guard let ciImage = CIImage(image: image) else { return }
+        
+        let request = VNRecognizeTextRequest { (request, error) in
+            guard let results = request.results else {
+                if let error = error {
+                    print("[recognizeText] \(error)")
+                }
+                return
+            }
+            
+            let observations = results as! [VNRecognizedTextObservation]
+            let topCandidates = observations.map { $0.topCandidates(1).first }.compactMap { $0 }
+            let textObservations = topCandidates.reduce("") { $0 + $1.string + " "}
+            
+            completion(textObservations)
+        }
+        
+        let orientation = CGImagePropertyOrientation(image.imageOrientation)
+        let handler = VNImageRequestHandler(ciImage: ciImage, orientation: orientation)
+        do {
+            try handler.perform([request])
+        } catch {
+            print("[recognizeText] exception")
+        }
     }
 }
 
@@ -465,7 +493,7 @@ public class CameraService {
     /// - Tag: CapturePhoto
     public func capturePhoto() {
 #if targetEnvironment(simulator)
-        guard let image = UIImage(named: "can"), let data = image.pngData() else { return }
+        guard let image = UIImage(named: "page"), let data = image.pngData() else { return }
         self.photo = Photo(originalData: data)
         return
 #endif
