@@ -234,8 +234,8 @@ struct CameraView: View {
                         Button(action: {
                             model.switchTextMode()
                         }, label: {
-                            Image(systemName: model.isTextMode ? "doc.text.fill.viewfinder" : "doc.text.viewfinder" )
-                                .font(.system(size: 40, weight: .medium, design: .default))
+                            Image(systemName: model.isTextMode ? "textformat.abc.dottedunderline" : "textformat.abc" )
+                                .font(.system(size: 20, weight: .medium, design: .default))
                         })
                         .accentColor(model.isTextMode ? .yellow : .white)
                         .padding(20.0)
