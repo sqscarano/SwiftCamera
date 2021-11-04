@@ -25,13 +25,18 @@ async def server(websocket, path):
     async for message in websocket:
         await process_message(websocket, message)
 
+  except (asyncio.exceptions.IncompleteReadError, websockets.exceptions.ConnectionClosed):
+    print("[websocket] connection_closed")
+    pass
+
   finally:
     print("[websocket] end_client")
-    clients.remove(websocket)    
+    clients.remove(websocket)
 
 
 async def main():
     async with websockets.serve(server, "0.0.0.0", 8383):
+        print("OK")
         await asyncio.Future()  # run forever
 
 asyncio.run(main())

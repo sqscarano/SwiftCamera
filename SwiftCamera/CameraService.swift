@@ -61,6 +61,8 @@ extension Photo {
         return UIImage(data: data)
     }
     
+    // MARK: Image Processing
+    
     public func getForegroundImage(completion: @escaping (UIImage?) -> Void) {
         guard
             let imageData = compressedData,
