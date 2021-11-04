@@ -71,6 +71,26 @@ final class CameraModel: ObservableObject {
         service.capturePhoto()
     }
     
+    // MARK: WebSockets
+    
+    func pastePhoto(scale: CGFloat) {
+        guard let foregroundImage = foregroundImage, let data = foregroundImage.pngData() else {
+            return
+        }
+        
+        let base64data = data.base64EncodedString()
+        let message = "{\"image\": \"\(base64data)\", \"scale\": \(scale)}"
+        
+        webSocketTask.send(URLSessionWebSocketTask.Message.string(message)) { error in
+            if let error = error {
+                print("error: \(error)")
+            }
+        }
+
+        readWebsocketMessage(webSocketTask: webSocketTask)
+        webSocketTask.resume()
+    }
+    
     func readWebsocketMessage(webSocketTask: URLSessionWebSocketTask) {
         webSocketTask.receive { [weak self] result in
             switch result {
@@ -87,24 +107,6 @@ final class CameraModel: ObservableObject {
             
             self?.readWebsocketMessage(webSocketTask: webSocketTask)
         }
-    }
-    
-    func pastePhoto() {
-        guard let foregroundImage = foregroundImage, let data = foregroundImage.pngData() else {
-            return
-        }
-        
-        let base64data = data.base64EncodedString()
-        let message = "{\"image\": \"\(base64data)\"}"
-        
-        webSocketTask.send(URLSessionWebSocketTask.Message.string(message)) { error in
-            if let error = error {
-                print("error: \(error)")
-            }
-        }
-
-        readWebsocketMessage(webSocketTask: webSocketTask)
-        webSocketTask.resume()
     }
     
     func flipCamera() {
@@ -134,7 +136,7 @@ struct CameraView: View {
             if model.foregroundImage == nil {
                 model.capturePhoto()
             } else {
-                model.pastePhoto()
+                model.pastePhoto(scale: scale)
             }
             
             model.resetForegroundImage()
@@ -185,6 +187,17 @@ struct CameraView: View {
         })
     }
     
+    var placeholderImage: some View {
+        Group {
+            if model.foregroundImage == nil {
+                Image(uiImage: UIImage(named: "can")!).resizable().aspectRatio(contentMode: .fill)
+            }
+            else {
+                EmptyView()
+            }
+        }
+    }
+    
     var body: some View {
         GeometryReader { reader in
             ZStack {
@@ -198,6 +211,10 @@ struct CameraView: View {
                             .font(.system(size: 20, weight: .medium, design: .default))
                     })
                     .accentColor(model.isFlashOn ? .yellow : .white)
+                    
+//#if targetEnvironment(simulator)
+//                    placeholderImage
+//#endif
                     
                     CameraPreview(session: model.session)
                         .onAppear {
