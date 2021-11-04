@@ -40,16 +40,18 @@ final class CameraModel: ObservableObject {
         self.session = service.session
         
         service.$photo.sink { [weak self] (photo) in
-            guard let pic = photo else { return }
-            self?.photo = pic
-            
-            pic.getForegroundImage() { [weak self] image in
-                guard let image = image else { return }
+            guard let self = self, let pic = photo, let image = pic.image else { return }
+            self.photo = pic
 
-                self?.foregroundImage = image
-
+            if self.isTextMode == true {
                 pic.recognizeText(image: image) { [weak self] string in
-                    self?.detectedText = string
+                    guard let self = self, let string = string else { return }
+                    self.detectedText = "\(string)"
+                    self.foregroundImage = image
+                }
+            } else {
+                pic.getForegroundImage() { [weak self] foregroundImage in
+                    self?.foregroundImage = foregroundImage
                 }
             }
         }
@@ -158,14 +160,14 @@ struct CameraView: View {
                 model.capturePhoto()
             } else {
                 model.pastePhoto(scale: scale)
+
+                model.resetForegroundImage()
+                scale = 0.8                
             }
-            
-            model.resetForegroundImage()
-            scale = 0.8
             
         }, label: {
             Circle()
-                .foregroundColor(.white)
+                .foregroundColor(model.foregroundImage == nil ? .white : .yellow)
                 .frame(width: 80, height: 80, alignment: .center)
                 .overlay(
                     Circle()
@@ -179,6 +181,16 @@ struct CameraView: View {
         Group {
             if let image = model.foregroundImage {
                 Image(uiImage: image).resizable().aspectRatio(contentMode: .fill)
+            } else {
+                EmptyView()
+            }
+        }
+    }
+    
+    var detectedText: some View {
+        Group {
+            if let text = model.detectedText {
+                Text(text).font(.body).foregroundColor(.white).padding(20.0)
             } else {
                 EmptyView()
             }
@@ -214,16 +226,6 @@ struct CameraView: View {
                 Image(uiImage: UIImage(named: "can")!).resizable().aspectRatio(contentMode: .fill)
             }
             else {
-                EmptyView()
-            }
-        }
-    }
-    
-    var detectedText: some View {
-        Group {
-            if let text = model.detectedText {
-                Text(text).font(.body).foregroundColor(.white).padding(20.0)
-            } else {
                 EmptyView()
             }
         }
