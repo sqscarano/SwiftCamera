@@ -87,9 +87,15 @@ final class CameraModel: ObservableObject {
         guard let foregroundImage = foregroundImage, let data = foregroundImage.pngData() else {
             return
         }
-        
-        let base64data = data.base64EncodedString()
-        let message = "{\"image\": \"\(base64data)\", \"scale\": \(scale), \"text\": \"\(detectedText ?? "")\"}"
+
+        var message = ""
+        if let text = detectedText, isTextMode {
+            let cleanText = text.replacingOccurrences(of: "\"", with: "\\\"")
+            message = "{\"text\": \"\(cleanText)\"}"
+        } else {
+            let base64data = data.base64EncodedString()
+            message = "{\"image\": \"\(base64data)\", \"scale\": \(scale)}"
+        }
         
         webSocketTask.send(URLSessionWebSocketTask.Message.string(message)) { error in
             if let error = error {
@@ -129,6 +135,7 @@ final class CameraModel: ObservableObject {
     
     func resetForegroundImage() {
         foregroundImage = nil
+        detectedText = ""
     }
     
     func switchFlash() {

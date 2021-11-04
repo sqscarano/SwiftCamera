@@ -17,6 +17,10 @@ async def process_message(websocket, message):
     print("[websocket] image")
     await send_to_others(websocket, message)
 
+  if "text" in request:
+    print("[websocket] text")
+    await send_to_others(websocket, message)
+
 async def server(websocket, path):
   try:
     clients.add(websocket)
