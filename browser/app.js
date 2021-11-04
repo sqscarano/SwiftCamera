@@ -7,13 +7,13 @@ ws.addEventListener('message', function (event) {
   const scale = request.scale
   const src = 'data:image/png;base64,' + imgBase64;
 
-  const width = 400.0 * scale;
+  const width = 600.0 * scale;
   var image = new Image(width);
   image.src = src;
   image.id = 'asdf';
 
   let frameDocument = document.getElementById("sqs-site-frame").contentWindow.document;
-  let parent = frameDocument.getElementsByClassName("sqs-row")[0].getElementsByClassName("sqs-col")[0];  
+  let parent = frameDocument.getElementsByClassName("sqs-row")[1].getElementsByClassName("sqs-col")[0];  
   parent.appendChild(image);  
 
   console.log('[websocket] image created');

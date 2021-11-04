@@ -45,7 +45,8 @@ extension CIImage {
                 for x in 0 ..< size {
                     let red = CGFloat(x) / CGFloat(size - 1)
                     let brightness = getBrightness(red: red, green: green, blue: blue)
-                    let alpha: CGFloat = brightness == 1 ? 0 : 1
+                    //let alpha: CGFloat = brightness == 1 ? 0 : 1
+                    let alpha: CGFloat = brightness > 0.9 ? 0 : 1
                     cubeRGB.append(Float(red * alpha))
                     cubeRGB.append(Float(green * alpha))
                     cubeRGB.append(Float(blue * alpha))
